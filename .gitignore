@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data
+data/
+*.csv
+*.parquet
+*.json
+*.pkl
+*.h5
+
+# MinIO
+minio_data/
+
+# MQTT
+mosquitto/data/
+mosquitto/log/
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Models
+models/
+*.onnx
+*.pt
+*.pth
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials
+credentials/
+secrets/

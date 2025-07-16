@@ -1,0 +1,99 @@
+{
+  "name": "520335 Data Science and Tools - Project Brew-Right",
+  // Base image with Python 3.10
+  "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
+  // Enable Docker-in-Docker for container management
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24.4"
+    },
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      "packages": [
+        "portaudio19-dev"
+      ]
+    }
+  },
+  // Forward ports for all services
+  "forwardPorts": [
+    9011, // MinIO Console
+    9010, // MinIO API
+    1883, // MQTT Broker
+    8000, // FastAPI Backend
+    8501, // Streamlit Dashboard
+    8080, // dbt docs
+    8888 // Jupyter Lab
+  ],
+  // Port labels for better UX
+  "portsAttributes": {
+    "9011": {
+      "label": "MinIO Console",
+      "onAutoForward": "openBrowser"
+    },
+    "1883": {
+      "label": "MQTT Broker"
+    },
+    "8000": {
+      "label": "FastAPI",
+      "onAutoForward": "openPreview"
+    },
+    "8501": {
+      "label": "Streamlit",
+      "onAutoForward": "openBrowser"
+    },
+    "8080": {
+      "label": "dbt Docs",
+      "onAutoForward": "openBrowser"
+    },
+    "8888": {
+      "label": "Jupyter Lab",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  // Install all dependencies after container creation
+  "postCreateCommand": "pip install --user -r requirements.txt && mkdir -p config/mosquitto data/{minio,mosquitto}",
+  // VS Code customizations
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Python Development
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        // Docker & YAML
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        // Data & SQL
+        "RandomFractalsInc.duckdb-sql-tools",
+        "mtxr.sqltools",
+        // GitHub Actions
+        "github.vscode-github-actions",
+        // Code Quality
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        // Utilities
+        "usernamehw.errorlens",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "files.autoSave": "afterDelay"
+      }
+    }
+  },
+  // Environment variables
+  "containerEnv": {
+    "MINIO_ENDPOINT": "http://localhost:9010",
+    "MINIO_ACCESS_KEY": "minioadmin",
+    "MINIO_SECRET_KEY": "minioadmin",
+    "MQTT_BROKER": "localhost",
+    "MQTT_PORT": "1883"
+  },
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,51 @@
+services:
+  # MinIO - S3-compatible Data Lake
+  minio:
+    image: minio/minio:latest
+    container_name: brew-right-minio
+    ports:
+      - "9010:9000"  # API endpoint
+      - "9011:9001"  # Web console
+    volumes:
+      - ./data/minio:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Mosquitto - MQTT Broker for IoT (Week 3, 13)
+  mosquitto:
+    image: eclipse-mosquitto:2.0.18
+    container_name: brew-right-mqtt
+    ports:
+      - "1883:1883"  # MQTT port
+      - "9883:9883"  # Websocket port
+    volumes:
+      - ./config/mosquitto:/mosquitto/config
+      - ./data/mosquitto:/mosquitto/data
+      - ./data/mosquitto/log:/mosquitto/log
+
+  # Create MinIO buckets automatically
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      mc mb myminio/bronze --ignore-existing;
+      mc mb myminio/silver --ignore-existing;
+      mc mb myminio/gold --ignore-existing;
+      mc mb myminio/models --ignore-existing;
+      exit 0;
+      "
+
+networks:
+  default:
+    name: brew-right-network
